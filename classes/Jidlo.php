@@ -43,17 +43,17 @@ class Jidlo {
 	
 	public function setNazev($novyNazev) {
 		$this->nazev = $novyNazev;
-		$this->zmena = true;
+		$thi->zmen();
 	}
 	
 	public function setReceptura($novaReceptura) {
 		$this->receptura = $novaReceptura;
-		$this->zmena = true;
+		$this->zmen();
 	}
 	
 	public function setTyp($novyTyp) {
 		$this->typ = $novyTyp;
-		$this->zmena = true;
+		$this->zmen();
 	}
 	
 	/**

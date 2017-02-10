@@ -46,17 +46,17 @@ class Surovina {
 
 	public function setNazev($novyNazev) {
 		$this->nazev = $novyNazev;
-		$this->zmena = true;
+		$this->zmen();
 	}
 	
 	public function setJednotka($novaJednotka) {
 		$this->jednotka = $novaJednotka;
-		$this->zmena = true;
+		$this->zmen();
 	}
 	
 	public function setTyp($novyTyp) {
 		$this->typ = $novyTyp;
-		$this->zmena = true;
+		$this->zmen();
 	}
 	
 	/**
