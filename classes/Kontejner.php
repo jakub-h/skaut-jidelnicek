@@ -58,6 +58,14 @@ class Kontejner {
 		$this->zmena = true;
 	}
 	
+	public function surovinyMaxId() {
+		return max(array_keys($this->suroviny));
+	}
+	
+	public function jidlaMaxId() {
+		return max(array_keys($this->jidla));
+	}
+	
 	/**
 	 * Zkontroluje, zda je dana surovina v kontejneru pod danym id.
 	 */
@@ -96,7 +104,8 @@ class Kontejner {
 	 * patricna vyjimka (KontejnerException).
 	 */
 	public function pridejSurovinu($id, $surovina) {
-		if (!jeSurovinaVKontejneru($id, $surovina)) {
+		$test = $this->jeSurovinaVKontejneru($id, $surovina);
+		if (!$test) {
 			$this->suroviny[$id] = $surovina;
 		}
 		else {
@@ -115,7 +124,7 @@ class Kontejner {
 	 * patricna vyjimka (KontejnerException).
 	 */
 	public function pridejJidlo($id, $jidlo) {
-		if (!jeJidloVKontejneru($id, $jidlo)) {
+		if (!$this->jeJidloVKontejneru($id, $jidlo)) {
 			$this->jidla[$id] = $jidlo;
 		}
 		else {
@@ -175,15 +184,15 @@ class Kontejner {
 	}
 	
 	public function zapisDoDB() {
-		if (!$this->jeZmena) {
+		if (!$this->jeZmena()) {
 			return false;
 		}
 		
 		Db::connect('127.0.0.1', 'skautsky_jidelnicek', 'root', '1234');
-		Db::executeStatement('DELETE FROM receptura');
-		Db::executeStatement('DELETE FROM jidlo_typ');
-		Db::executeStatement('DELETE FROM surovina');
-		Db::executeStatement('DELETE FROM jidlo');
+		Db::query('DELETE FROM receptura');
+		Db::query('DELETE FROM jidlo_typ');
+		Db::query('DELETE FROM surovina');
+		Db::query('DELETE FROM jidlo');
 		
 		$surovinyIds = array_keys($this->suroviny);
 		foreach($surovinyIds as $idSurovina) {
@@ -199,9 +208,11 @@ class Kontejner {
 			Db::insert('jidlo', array(
 					'id_jidlo' => $idJidlo,
 					'nazev' => $this->jidla[$idJidlo]->getNazev()));
-			Db::insert('jidlo_typ', array(
+			foreach($this->jidla[$idJidlo]->getTyp() as $idTyp) {
+				Db::insert('jidlo_typ', array(
 					'id_jidlo' => $idJidlo,
-					'id_typ' => $this->jidla[$idJidlo]->getTyp()));
+					'id_typ' => $idTyp));
+			}	
 			$surovinyRecIds = array_keys($this->jidla[$idJidlo]->getReceptura());
 			foreach($surovinyRecIds as $idSurovina) {
 				Db::insert('receptura', array(

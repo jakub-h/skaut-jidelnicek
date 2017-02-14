@@ -30,7 +30,7 @@ class Jidlo {
 	}
 	
 	public function getNazev() {
-		return $this->nazev;
+		return htmlspecialchars($this->nazev);
 	}
 	
 	public function getReceptura() {
@@ -74,5 +74,6 @@ class Jidlo {
 	public function __toString() {
 		return $this->getNazev();
 	}
+	
 }
 

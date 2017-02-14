@@ -33,15 +33,15 @@ class Surovina {
 	}
 	
 	public function getNazev() {
-		return $this->nazev;
+		return htmlspecialchars($this->nazev);
 	}
 	
 	public function getJednotka() {
-		return $this->jednotka;
+		return htmlspecialchars($this->jednotka);
 	}
 	
 	public function getTyp() {
-		return $this->typ;
+		return htmlspecialchars($this->typ);
 	}
 
 	public function setNazev($novyNazev) {
