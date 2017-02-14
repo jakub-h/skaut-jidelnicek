@@ -1,5 +1,9 @@
 <?php
 
+require_once('Surovina.php');
+require_once('Db.php');
+require_once('Jidlo.php');
+require_once('KontejnerException.php');
 /**
  * Pomocna trida pro manipulaci s jidly a surovinami.
  * 
@@ -18,19 +22,17 @@ class Kontejner {
 	private $jidla;
 	private $zmena = false;
 
+	
 	/**
-	 * Konstruktor.
+	 * Bezparametricky konstruktor.
 	 * 
-	 * @param $suroviny (array) (Surovina.php)
-	 * @param $jidla (array) (Jidlo.php)
-	 * 
-	 * Vytvori kontejner ze zadanych asoc. poli:
+	 * $suroviny a $jidla jsou prazdna pole.
 	 * - klice jsou jednotlive id
 	 * - hodnoty jsou konkretni instance objektu
 	 */
-	public function __construct($suroviny, $jidla) {
-		$this->suroviny = $suroviny;
-		$this->jidla = $jidla;
+	public function __construct() {
+		$this->suroviny = array();
+		$this->jidla = array();
 	}
 	
 	public function getSuroviny() {
@@ -94,7 +96,7 @@ class Kontejner {
 	 * patricna vyjimka (KontejnerException).
 	 */
 	public function pridejSurovinu($id, $surovina) {
-		if (!jeSurovinaVKontejneru($id, $surovina) {
+		if (!jeSurovinaVKontejneru($id, $surovina)) {
 			$this->suroviny[$id] = $surovina;
 		}
 		else {
@@ -107,13 +109,13 @@ class Kontejner {
 	 * Prida jidlo do kontejneru.
 	 * 
 	 * @param $id (int) id daneho jidla
-	 * @param $jidlo (Jidlo.php) surovina, ktere ma byt pridana
+	 * @param $jidlo (Jidlo.php) jidlo, ktere ma byt pridano
 	 * 
 	 * Pokud se jidlo v kontejneru nachazi (i s jinym id), je vyhozena
 	 * patricna vyjimka (KontejnerException).
 	 */
 	public function pridejJidlo($id, $jidlo) {
-		if (!jeJidloVKontejneru($id, $jidlo) {
+		if (!jeJidloVKontejneru($id, $jidlo)) {
 			$this->jidla[$id] = $jidlo;
 		}
 		else {
@@ -122,9 +124,92 @@ class Kontejner {
 		$this->zmen();
 	}
 	
-	//TODO co se udela s odebranou surovinou? kam s ni? jak poznam, ze ji mam vymazat?
+	
 	public function odeberSurovinu($id) {
-		//TODO unset()
+		unset($this->suroviny[$id]);
+		$this->zmen();
+	}
 	
+	public function odeberSurovinuZJidla($idSur, $idJidlo) {
+		unset($this->jidla[$idJidlo]->receptura[$idSur]);
+		$this->zmen();
+	}
 	
+	public function upravRecepturu($idJidlo, $mnozstvi, $idSur) {
+		$this->jidla->receptura[$idSur] = $mnozstvi;
+		$this->zmen();
+	}
+	
+	public function nactiDB() {
+		Db::connect('127.0.0.1', 'skautsky_jidelnicek', 'root', '1234');
+		
+		$surovinyDB = Db::queryAll('SELECT * FROM surovina');
+		foreach($surovinyDB as $surovinaDB) {
+			$surovina = new Surovina($surovinaDB['nazev'], $surovinaDB['jednotka'],
+									$surovinaDB['typ'], false);
+			try {
+				$this->pridejSurovinu($surovinaDB['id_surovina'], $surovina);
+				$this->zmena = false;
+			} catch (KontejnerException $e) {
+				echo ('chyba: surovina jiz je v kontejneru s jinym id');
+			}
+		}
+		
+		$jidlaDB = Db::queryAll('SELECT * FROM jidlo');
+		foreach($jidlaDB as $jidloDB) {
+			$jidloTyp = Db::queryAll('
+							SELECT id_typ
+							FROM jidlo_typ
+							WHERE id_jidlo = ?', $jidloDB['id_jidlo']);
+			$recepturaDB = Db::queryAll('
+							SELECT id_surovina, mnozstvi
+							FROM receptura
+							WHERE id_jidlo = ?', $jidloDB['id_jidlo']);
+			$recepturaKont = array();
+			foreach($recepturaDB as $surovinaRec) {
+				$recepturaKont[$surovinaRec['id_surovina']] = $surovinaRec['mnozstvi'];
+			}
+			$jidlo = new Jidlo($jidloDB['nazev'], $recepturaKont, $jidloTyp, false);
+			$this->pridejJidlo($jidloDB['id_jidlo'], $jidlo);
+		}
+	}
+	
+	public function zapisDoDB() {
+		if (!$this->jeZmena) {
+			return false;
+		}
+		
+		Db::connect('127.0.0.1', 'skautsky_jidelnicek', 'root', '1234');
+		Db::executeStatement('DELETE FROM receptura');
+		Db::executeStatement('DELETE FROM jidlo_typ');
+		Db::executeStatement('DELETE FROM surovina');
+		Db::executeStatement('DELETE FROM jidlo');
+		
+		$surovinyIds = array_keys($this->suroviny);
+		foreach($surovinyIds as $idSurovina) {
+			Db::insert('surovina', array(
+					'id_surovina' => $idSurovina,
+					'nazev' => $this->suroviny[$idSurovina]->getNazev(),
+					'jednotka' => $this->suroviny[$idSurovina]->getJednotka(),
+					'typ' => $this->suroviny[$idSurovina]->getTyp()));
+		}
+		
+		$jidlaIds = array_keys($this->jidla);
+		foreach($jidlaIds as $idJidlo) {
+			Db::insert('jidlo', array(
+					'id_jidlo' => $idJidlo,
+					'nazev' => $this->jidla[$idJidlo]->getNazev()));
+			Db::insert('jidlo_typ', array(
+					'id_jidlo' => $idJidlo,
+					'id_typ' => $this->jidla[$idJidlo]->getTyp()));
+			$surovinyRecIds = array_keys($this->jidla[$idJidlo]->getReceptura());
+			foreach($surovinyRecIds as $idSurovina) {
+				Db::insert('receptura', array(
+					'id_jidlo' => $idJidlo,
+					'id_surovina' => $idSurovina,
+					'mnozstvi' => $this->jidla[$idJidlo]->getReceptura()[$idSurovina]));
+			}
+		}
+		return true;
+	}
 }

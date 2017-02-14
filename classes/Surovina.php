@@ -29,7 +29,7 @@ class Surovina {
 		$this->nazev = $nazev;
 		$this->jednotka = $jednotka;
 		$this->typ = $typ;
-		$this->zmena = $zmena
+		$this->zmena = $zmena;
 	}
 	
 	public function getNazev() {
@@ -72,5 +72,9 @@ class Surovina {
 	 */
 	public function zmen() {
 		$this->zmena = true;
+	}
+	
+	public function __toString() {
+		return $this->getNazev();
 	}
 }

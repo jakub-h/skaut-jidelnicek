@@ -5,7 +5,7 @@
  * 
  * Atributy:
  * - $nazev (string) Jmeno jidla
- * - $receptura (array) Asociativni pole. Klice jsou jednotlive suroviny,
+ * - $receptura (array) Asociativni pole. Klice jsou id jednotlivych suroviny,
  * 		hodnoty jsou mnozstvi danych surovin.
  * - $typ (array(JidloTyp.php)) Urcuje 'typ' jidla (snidane, svacina,...).
  * 		Jidlo muze mit i vic typu - proto pole.
@@ -69,6 +69,10 @@ class Jidlo {
 	 */
 	public function zmen() {
 		$this->zmena = true;
+	}
+	
+	public function __toString() {
+		return $this->getNazev();
 	}
 }
 
