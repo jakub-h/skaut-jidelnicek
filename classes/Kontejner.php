@@ -9,7 +9,8 @@ require_once('KontejnerException.php');
  * 
  * Udrzuje 'kopii' databaze ulozenou v objektech. Nabizi zakladni funkce
  * pro manipulaci s nimi. Vzdy pri pridani suroviny se rovnou ulozi do DB
- * a kontejner se aktualizuje.
+ * a kontejner se aktualizuje. Je to sice docela neefektivni, ale neocekavam
+ * prilis mnoho dat.
  * 
  * Atributy:
  * - $suroviny (array) Pole vsech dostupnych surovin. Klice jsou
@@ -98,13 +99,46 @@ class Kontejner {
 		}
 		$this->nactiDB();
 	}
+	
+	/**
+	 * Do prida surovinu do receptury jidla. Lze pouzit i pro modifikaci
+	 * mnozstvi.
+	 * 
+	 * - $idSurovina (int) - id suroviny, ktera ma byt pridana
+	 * - $mnozstvi (int) - mnozstvi suroviny v receptu
+	 * - $idJidlo (int) - id jidla, jehoz receptura je upravovana
+	 */
+	public function pridejSurovinuDoReceptu($idSurovina, $mnozstvi, $idJidlo) {
+		Db::insert('receptura', array('id_jidlo' => $idJidlo,
+									'id_surovina' => $idSurovina,
+									'mnozstvi' => $mnozstvi));
+		$this->nactiDB();
+	}
+	
+	/**
+	 * Odebere surovinu z receptury daneho jidla.
+	 * 
+	 * Po upraveni databaze aktualizuje kontejner.
+	 */
+	public function odeberSurovinuZReceptu($idSurovina, $idJidlo) {
+		$pocet = Db::query('DELETE FROM receptura
+							WHERE id_surovina = ? AND id_jidlo = ?',
+							$idSurovina, $idJidlo);
+		if ($pocet == 0) {
+			return 'nebyl ovlivnen zadny radek';
+		}
+		if ($pocet != 1) {
+			return 'mozna nastala chyba: bylo ovlivneno moc radku';
+		}
+		$this->nactiDB();
+	}
 		
 	/**
 	 * Nacte do kontejneru aktualni stav databaze.
 	 * 
 	 */
 	public function nactiDB() {
-		Db::connect('127.0.0.1', 'skautsky_jidelnicek', 'root', '1234');
+		Db::connect('127.0.0.1', 'skaut_jidelnicek', 'root', '1234');
 		
 		$surovinyDB = Db::queryAll('SELECT * FROM surovina');
 		foreach($surovinyDB as $surovinaDB) {

@@ -17,21 +17,24 @@
 			require("classes/$class.php");
 		}
 		spl_autoload_register("importClass");
-		
-		/**
-		 * Pripojeni se k databazi
-		 */
-		Db::connect('127.0.0.1', 'skautsky_jidelnicek', 'root', '1234');
+
+		$kontejner = new Kontejner();
+
+		$kontejner->nactiDB();
+
+		$suroviny = $kontejner->getSuroviny();
+		$jidla = $kontejner->getJidla();
+		$surovinyIds = array_keys($suroviny);
+		$jidlaIds = array_keys($jidla);
 		
 		/**
 		 * Vyber jidla, ktere mame upravit
 		 */
 		if (!$_GET) {
-			$jidla = Db::queryAll('SELECT * FROM jidlo');
 			echo('<form method="get">Nazev jidla:<select name="id_jidlo">');
-			foreach($jidla as $jidlo) {
-				echo('<option value="'.htmlspecialchars($jidlo['id_jidlo']).
-				'">'.htmlspecialchars($jidlo['nazev']).'</option>');
+			foreach($jidlaIds as $idJidlo) {
+				echo('<option value="'.htmlspecialchars($idJidlo).
+				'">'.htmlspecialchars($jidla[$idJidlo]).'</option>');
 			}
 			echo('</select><br />');
 			echo('<input type="submit" value="Potvrdit"></form>');
@@ -44,34 +47,27 @@
 			/**
 			 * Vypis surovin
 			 */
-			$nazevJidla = Db::querySingle('
-				SELECT nazev
-				FROM jidlo
-				WHERE id_jidlo = ?', $_GET['id_jidlo']);
-			echo('<h2>Seznam surovin pro '.$nazevJidla.'</h2><table border="1">');
-			$suroviny = Db::queryAll('
-				SELECT id_surovina, mnozstvi
-				FROM receptura
-				WHERE id_jidlo = ?', $_GET['id_jidlo']);
-			foreach($suroviny as $surovina) {
-				$nazev = Db::querySingle('
-					SELECT nazev
-					FROM surovina
-					WHERE id_surovina = ?', $surovina['id_surovina']);
-				echo('<tr><td>'.htmlspecialchars($nazev).'</td>');
-				echo('<td>'.htmlspecialchars($surovina['mnozstvi']).'</td>');
-				echo('</tr>');
-			}
+			$nazevJidla = $jidla[$_GET['id_jidlo']]->getNazev();
+			echo('<h2>Seznam surovin pro '.$nazevJidla.'</h2>');
+			$receptura = $jidla[$_GET['id_jidlo']]->getReceptura();
+			$recepturaKeys = array_keys($receptura);
+			echo('<table border=1>');
+			foreach($recepturaKeys as $idSurovina) {
+				echo('<tr><td>'.$suroviny[$idSurovina]->getNazev().'</td>
+				<td>'.htmlspecialchars($receptura[$idSurovina]).'</td>
+				<td>'.$suroviny[$idSurovina]->getJednotka().'</td>
+				<td>'.$suroviny[$idSurovina]->getTyp().'</td></tr>');
 			echo('</table>');
-			
+			}
+			/*
 			echo('<h2>Pridani suroviny do seznamu</h2>');
 			echo('<form method="post"><select name="surovina_nazev">');
-			$vsechnySuroviny = Db::queryAll('SELECT * FROM surovina');
-			foreach($vsechnySuroviny as $surovina) {
-				echo('<option value="'.htmlspecialchars($surovina['id_surovina']).
+			foreach($suroviny as $surovina) {
+				echo('<option value="'..
 				'">'.htmlspecialchars($surovina['nazev']).'</option>');
 			}	
 			echo('</select></form>');
+			*/
 		}
 		
 		?>

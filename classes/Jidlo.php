@@ -48,7 +48,7 @@ class Jidlo {
 	public function setTyp($novyTyp) {
 		$this->typ = $novyTyp;
 	}
-
+	
 	public function __toString() {
 		return $this->getNazev();
 	}
