@@ -3,7 +3,7 @@
 require_once('Surovina.php');
 require_once('Db.php');
 require_once('Jidlo.php');
-require_once('KontejnerException.php');
+
 /**
  * Pomocna trida pro manipulaci s jidly a surovinami.
  * 

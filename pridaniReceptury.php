@@ -57,8 +57,8 @@
 				<td>'.htmlspecialchars($receptura[$idSurovina]).'</td>
 				<td>'.$suroviny[$idSurovina]->getJednotka().'</td>
 				<td>'.$suroviny[$idSurovina]->getTyp().'</td></tr>');
-			echo('</table>');
 			}
+			echo('</table>');
 			/*
 			echo('<h2>Pridani suroviny do seznamu</h2>');
 			echo('<form method="post"><select name="surovina_nazev">');
