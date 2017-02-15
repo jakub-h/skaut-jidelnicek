@@ -19,7 +19,7 @@ foreach($jidla as $jidlo) {
 	echo($jidlo.' -- ');
 	$typy = $jidlo->getTyp();
 	foreach($typy as $typ) {
-		echo(JidloTyp::getTyp($typ['id_typ']).' ');
+		echo(JidloTyp::getTyp($typ).' ');
 	}
 	$surovinyIds = array_keys($jidlo->getReceptura());
 	echo('<table border=1>');
@@ -36,12 +36,12 @@ echo('<br /><br />');
 foreach($suroviny as $surovina) {
 	echo($surovina.'<br />');
 }
-
+/*
 $mrkev = new Surovina('mrkev', 'ks', 'zelenina', true);
 $paprika = new Surovina('červená paprika', 'ks', 'koření', true);
 echo($kontejner->pridejSurovinu($kontejner->surovinyMaxId() + 1, $mrkev));
 
 $kontejner->zapisDoDB();
-
+*/
 
 

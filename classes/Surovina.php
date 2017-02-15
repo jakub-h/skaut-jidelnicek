@@ -13,7 +13,7 @@ class Surovina {
 	private $nazev;
 	private $jednotka;
 	private $typ;
-	private $zmena;
+	//private $zmena;
 	
 	/**
 	 * Konstruktor.
@@ -25,11 +25,11 @@ class Surovina {
 	 * 
 	 * obdobne i u setteru.
 	 */
-	public function __construct($nazev, $jednotka, $typ, $zmena) {
+	public function __construct($nazev, $jednotka, $typ) {
 		$this->nazev = $nazev;
 		$this->jednotka = $jednotka;
 		$this->typ = $typ;
-		$this->zmena = $zmena;
+		//$this->zmena = $zmena;
 	}
 	
 	public function getNazev() {
@@ -46,34 +46,34 @@ class Surovina {
 
 	public function setNazev($novyNazev) {
 		$this->nazev = $novyNazev;
-		$this->zmen();
+		//$this->zmen();
 	}
 	
 	public function setJednotka($novaJednotka) {
 		$this->jednotka = $novaJednotka;
-		$this->zmen();
+		//$this->zmen();
 	}
 	
 	public function setTyp($novyTyp) {
 		$this->typ = $novyTyp;
-		$this->zmen();
+		//$this->zmen();
 	}
 	
 	/**
 	 * Zjisti, zda byla surovina zmenena od nacteni z databaze (popr. zda
 	 * vubec byla v databazi) a jestli je tedy nutne ji opet zapisovat do DB
-	 */
+	 *
 	public function bylaZmenena() {
 		return $this->zmena;
 	}
 	
 	/**
 	 * Zmeni atribut suroviny $zmena na true.
-	 */
+	 *
 	public function zmen() {
 		$this->zmena = true;
 	}
-	
+	*/
 	public function __toString() {
 		return $this->getNazev();
 	}

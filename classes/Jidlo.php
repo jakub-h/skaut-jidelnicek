@@ -20,13 +20,11 @@ class Jidlo {
 	private $nazev;
 	private $receptura;
 	private $typ;
-	private $zmena;
 	
-	public function __construct($nazev, $receptura, $typ, $zmena) {
+	public function __construct($nazev, $receptura, $typ) {
 		$this->nazev = $nazev;
 		$this->receptura = $receptura;
 		$this->typ = $typ;
-		$this->zmena = $zmena;
 	}
 	
 	public function getNazev() {
@@ -43,34 +41,34 @@ class Jidlo {
 	
 	public function setNazev($novyNazev) {
 		$this->nazev = $novyNazev;
-		$thi->zmen();
+		//$this->zmen();
 	}
 	
 	public function setReceptura($novaReceptura) {
 		$this->receptura = $novaReceptura;
-		$this->zmen();
+		//$this->zmen();
 	}
 	
 	public function setTyp($novyTyp) {
 		$this->typ = $novyTyp;
-		$this->zmen();
+		//$this->zmen();
 	}
 	
 	/**
 	 * Zjisti, zda bylo jidlo zmeneno od nacteni z databaze (popr. zda
 	 * vubec bylo v databazi) a jestli je tedy nutne jej opet zapisovat do DB
-	 */
+	 *
 	public function byloZmeneno() {
 		return $this->zmena;
 	}
 	
 	/**
 	 * Zmeni atribut jidla $zmena na true.
-	 */
+	 *
 	public function zmen() {
 		$this->zmena = true;
 	}
-	
+	*/
 	public function __toString() {
 		return $this->getNazev();
 	}
