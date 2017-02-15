@@ -9,10 +9,10 @@ class JidloTyp {
 	
 	public static function getTyp($number) {
 		switch($number) {
-			case 1: return $this::SNIDANE;
-			case 2: return $this::SVACINA;
-			case 3: return $this::OBED;
-			case 4: return $this::VECERE;
+			case 1: return self::SNIDANE;
+			case 2: return self::SVACINA;
+			case 3: return self::OBED;
+			case 4: return self::VECERE;
 		}
 	}
 }
