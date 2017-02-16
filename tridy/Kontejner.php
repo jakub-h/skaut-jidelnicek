@@ -161,6 +161,7 @@ class Kontejner {
 			$this->suroviny[$surovinaDB['id_surovina']] = $surovina;
 
 		}
+		asort($this->suroviny);
 		
 		$jidlaDB = Db::queryAll('SELECT * FROM jidlo');
 		foreach($jidlaDB as $jidloDB) {
@@ -183,5 +184,6 @@ class Kontejner {
 			$jidlo = new Jidlo($jidloDB['nazev'], $recepturaKont, $jidloTyp);
 			$this->jidla[$jidloDB['id_jidlo']] = $jidlo;
 		}
+		asort($this->jidla);
 	}
 }
