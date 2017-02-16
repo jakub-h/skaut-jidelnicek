@@ -3,7 +3,7 @@
 mb_internal_encoding("UTF-8");
 
 function nactiTridu($trida) {
-	require("classes/$trida.php");
+	require("tridy/$trida.php");
 }
 
 spl_autoload_register("nactiTridu");

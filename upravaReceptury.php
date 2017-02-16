@@ -13,10 +13,10 @@
 		 * Import knihoven
 		 */
 		mb_internal_encoding("UTF-8");
-		function importClass($class) {
-			require("classes/$class.php");
+		function nactiTridu($trida) {
+			require("tridy/$trida.php");
 		}
-		spl_autoload_register("importClass");
+		spl_autoload_register("nactiTridu");
 
 
 		/**
@@ -28,8 +28,8 @@
 
 		$suroviny = $kontejner->getSuroviny();
 		$jidla = $kontejner->getJidla();
-		$surovinyIds = array_keys($suroviny);
-		$jidlaIds = array_keys($jidla);
+		$surovinyIds = $kontejner->getSurovinyIds();
+		$jidlaIds = $kontejner->getJidlaIds();
 		
 		/**
 		 * Vyber jidla, ktere mame upravit
@@ -56,8 +56,8 @@
 											$_POST['mnozstvi'], $_GET['id_jidlo']);
 				$suroviny = $kontejner->getSuroviny();
 				$jidla = $kontejner->getJidla();
-				$surovinyIds = array_keys($suroviny);
-				$jidlaIds = array_keys($jidla);
+				$surovinyIds = $kontejner->getSurovinyIds();
+				$jidlaIds = $kontejner->getJidlaIds();
 			}
 			
 			/**
